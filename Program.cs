@@ -12,11 +12,18 @@ namespace Vinimport_TUI
         static string[][] text_inputs = new string[8][];
         static int[,] field_size = new int[3, 2];
         static int[,] pos_of_inputs = new int[8, 2];
-        static int current_windowwidth;
-        static int current_windowheight;
+        static int current_windowwidth = 0;
+        static int current_windowheight = 0;
         static int[] default_cursor_pos = { 0, 0 };
+        static string bottom_bar;
 
-        void set_and_write(int where, string[] what)
+        static void err_msg(string msg, int which = 1)
+        {
+            Console.WriteLine("ERROR: {1}", msg );
+            Environment.Exit(which);
+        }
+        static void set_and_write(int where, string[] what)
+            //TODO: text wrapping
         {
             text_inputs[where] = what; //for regeneraton af ui
             for (int n = 0; n < what.Length; ++n)
@@ -26,7 +33,7 @@ namespace Vinimport_TUI
             }
             Console.SetCursorPosition(default_cursor_pos[0], default_cursor_pos[1]);
         }
-        void input_fields(string where, string[] what)
+        static void input_fields(string where, string[] what)
         {
             switch (where)
             {
@@ -55,33 +62,9 @@ namespace Vinimport_TUI
                     set_and_write(7, what);
                     break;
                 default:
-                    Console.WriteLine("No such action exists.");
-                    Environment.Exit(1);
+                    err_msg("No such action exists.");
                     break;
             }
-        }
-        static void generate_ui()
-        {
-            //"sep" står for separation, som ligner sådan: "----------------------"
-            text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
-            text_fields[1] = new string[] { "Dato / tid", "København:", "London:", "Singapore:" };
-            text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };
-            string bottom_bar = "Skulpturen Favntag er ikke at finde på den faste plads, og det satte spekulationer";
-
-            // Den del skal gør sikker, at terminal vindue er altid symmetrisk. Fordi vi har brug for 1 linje, som dividere vores app i halv, 2 gange, vi har brug for "odd" nummere.
-            if ((Console.WindowWidth + Console.WindowWidth % 2) == current_windowwidth || (Console.WindowHeight + Console.WindowHeight % 2) == current_windowheight)
-            {
-                Console.WindowWidth -= Console.WindowWidth % 2;
-                Console.WindowHeight -= Console.WindowHeight % 2;
-                current_windowwidth = Console.WindowWidth;
-                current_windowheight = Console.WindowHeight;
-                return;
-            }
-
-
-
-            Console.Clear();
-            Console.SetCursorPosition(0, 0);
         }
         static int odd_number(int input)
         {
@@ -89,29 +72,47 @@ namespace Vinimport_TUI
                 return input + 1;
             return input;
         }
-
-        static bool odd_numbered_size()
+        static bool odd_numbered_window_size()
+        // Den del skal gør sikker, at terminal vindue er altid symmetrisk. Fordi vi har brug for 1 linje, som dividere vores app i halv, 2 gange, vi har brug for "odd" nummere.
         {
-            bool response = false;
-            if (Console.WindowWidth % 2 == 0)
+
+            if (Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) < 1 || Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) < 1)
             {
-                ++Console.WindowWidth;
-                response = true;
+                Console.WindowWidth = odd_number(Console.WindowWidth);
+                current_windowwidth = Console.WindowWidth;
+                Console.WindowHeight = odd_number(Console.WindowHeight);
+                current_windowheight = Console.WindowHeight;
+                return false;
             }
-            if (Console.WindowHeight % 2 == 0)
+            else if (Console.WindowWidth % 2 == 0)
             {
-                ++Console.WindowHeight;
-                response = true;
+                Console.WindowWidth = odd_number(Console.WindowWidth);
             }
+            else if (Console.WindowHeight % 2 == 0)
+            {
+                Console.WindowHeight = odd_number(Console.WindowHeight);
+            }
+            return true;
+        }
+        static void generate_ui()
+        {
+
+            if (odd_numbered_window_size())
+                return; //Hvis størrelsen er ikke meget forskellig, fortsæt ikke. Ellers generere nyt layout.
+
+            //resten af kode
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
 
 
-
-
-
-            return response;
         }
         static void Main(string[] args)
         {
+            //"sep" står for separation, som ligner sådan: "----------------------"
+            text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
+            text_fields[1] = new string[] { "Dato / tid", "København:", "London:", "Singapore:" };
+            text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };
+            bottom_bar = "Skulpturen Favntag er ikke at finde på den faste plads, og det satte spekulationer";
             generate_ui();
 
 

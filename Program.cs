@@ -6,6 +6,17 @@ using System.Threading.Tasks;
 
 namespace Vinimport_TUI
 {
+    /*
+     * Som koden er, den mangler disse vigtige funktionaliteter:
+     * - UI generation kode i generate_ui
+     * - API kode
+     * - CS0120 og CS5001 error kode, eller jeg kan ikke få shit at virke her
+     * Og disse ikke-så-vigtig funktionaliteter:
+     * - Text wrapping i set_and_write funktion (Ikke vigtig. UI generation kode er vigtiger end det.)
+     * - Magisk kode for offset af begyndelse af text_input linje i venstre sub-vindue ("Lagerstatus").
+     * Og selvfølgelig:
+     * - Masse af testning
+     */
     internal class Program
     {
         static string[][] text_fields = new string[3][];
@@ -16,10 +27,11 @@ namespace Vinimport_TUI
         static int current_windowheight = 0;
         static int[] default_cursor_pos = { 0, 0 };
         static string bottom_bar;
+        static int bottom_bar_height = 2;
 
         static void err_msg(string msg, int which = 1)
         {
-            Console.WriteLine("ERROR: {1}", msg );
+            Console.WriteLine("ERROR: " + msg );
             Environment.Exit(which);
         }
         static void set_and_write(int where, string[] what)
@@ -35,7 +47,7 @@ namespace Vinimport_TUI
         }
         static void input_fields(string where, string[] what)
         {
-            switch (where)
+            switch (where) //Kunne forkortes ved brug af array og array.length men de 3 sidste caser har brug magisk kode.
             {
                 case "temp_og_fugt_lager":
                     set_and_write(0, what);
@@ -97,23 +109,46 @@ namespace Vinimport_TUI
         static void generate_ui()
         {
 
+            //Skal være først i funktionen
             if (odd_numbered_window_size())
                 return; //Hvis størrelsen er ikke meget forskellig, fortsæt ikke. Ellers generere nyt layout.
 
-            //resten af kode
+            int y_accounted_for_bar = current_windowheight - bottom_bar_height;
+            int vertically_middle = (current_windowwidth - 1) / 2; 
+
             Console.Clear();
             Console.SetCursorPosition(0, 0);
+
+            //Lave vandret og lodret linje. Vær opmærksom, at der skal tage hensyn af bottom_bar_height
+            for (int y = 0; y < y_accounted_for_bar; ++y)
+            {
+                if ((y_accounted_for_bar - 1) / 2 + 1 == y)
+                {
+                    Console.SetCursorPosition(0, y);
+                    Console.WriteLine(new string('-', vertically_middle - 1) + "|");
+                }
+                else
+                {
+                    Console.SetCursorPosition(vertically_middle, y);
+                    Console.WriteLine("|");
+                }
+            }
+
+            //Sætte ind text_fields
 
 
         }
         static void Main(string[] args)
         {
+            //var prgm = new Program();
             //"sep" står for separation, som ligner sådan: "----------------------"
+            // Først string er titlen, og resten er enten separationer eller sub-titler.
             text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
             text_fields[1] = new string[] { "Dato / tid", "København:", "London:", "Singapore:" };
             text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };
             bottom_bar = "Skulpturen Favntag er ikke at finde på den faste plads, og det satte spekulationer";
             generate_ui();
+            err_msg("End"); //Test generate_ui funktion
 
 
             while (true)
@@ -124,7 +159,7 @@ namespace Vinimport_TUI
                 /* API:
                 Du skal bruge "input_fields(where, what)" til at få ting på skærmen,
                 "what" er string array, som bevæge cursor til specifiske plads og skrive hvad der er i array.
-                "where" referere til en switch statement, som tjekke, om en af de følgene tekstfælde passer, som du kende som:
+                "where" referere til et switch statement, som tjekke, om en af de følgene tekstfælde passer, som du kende som:
                 "temp_og_fugt_lager"    = "Lager:"
                 "temp_og_fugt_udenfor"  = "Udenfor:"
                 "date_kobenhavn"        = "København:"

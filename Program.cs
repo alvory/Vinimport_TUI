@@ -10,7 +10,6 @@ namespace Vinimport_TUI
      * Som koden er, den mangler disse vigtige funktionaliteter:
      * - UI generation kode i generate_ui
      * - API kode
-     * - CS0120 og CS5001 error kode, eller jeg kan ikke få shit at virke her
      * Og disse ikke-så-vigtig funktionaliteter:
      * - Text wrapping i set_and_write funktion (Ikke vigtig. UI generation kode er vigtiger end det.)
      * - Magisk kode for offset af begyndelse af text_input linje i venstre sub-vindue ("Lagerstatus").
@@ -20,13 +19,12 @@ namespace Vinimport_TUI
     internal class Program
     {
         static string[][] text_fields = new string[3][];
-        static string[][] text_inputs = new string[8][];
-        static int[,] field_size = new int[3, 2];
-        static int[,] pos_of_inputs = new int[8, 2];
+        static string[][] text_inputs = new string[9][];
+        static int[,] field_size = new int[3, 2]; // Mest højeste og venstreste punktet af field.
+        static int[,] pos_of_inputs = new int[9, 2];
         static int current_windowwidth = 0;
         static int current_windowheight = 0;
         static int[] default_cursor_pos = { 0, 0 };
-        static string bottom_bar;
         static int bottom_bar_height = 2;
 
         static void err_msg(string msg, int which = 1)
@@ -44,6 +42,13 @@ namespace Vinimport_TUI
                 Console.Write(what[n]);
             }
             Console.SetCursorPosition(default_cursor_pos[0], default_cursor_pos[1]);
+        }
+        static int centered_text(int length, string what)
+        {
+            if (what.Length % 2 == 0)
+                return (length - length % 2 - what.Length) / 2;
+            else
+                return (length - what.Length) / 2;
         }
         static void input_fields(string where, string[] what)
         {
@@ -73,6 +78,9 @@ namespace Vinimport_TUI
                 case "lager_mest":
                     set_and_write(7, what);
                     break;
+                case "newsfeed":
+                    set_and_write(8, what);
+                    break;
                 default:
                     err_msg("No such action exists.");
                     break;
@@ -86,25 +94,29 @@ namespace Vinimport_TUI
         }
         static bool odd_numbered_window_size()
         // Den del skal gør sikker, at terminal vindue er altid symmetrisk. Fordi vi har brug for 1 linje, som dividere vores app i halv, 2 gange, vi har brug for "odd" nummere.
+        // Efter testning, fundet jeg ud, at der kan ske layout problemmer, derfor skal funktionen være mere aggressiv.
         {
-
-            if (Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) < 1 || Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) < 1)
+            if (current_windowwidth != Console.WindowWidth || current_windowheight != Console.WindowHeight)
             {
-                Console.WindowWidth = odd_number(Console.WindowWidth);
-                current_windowwidth = Console.WindowWidth;
-                Console.WindowHeight = odd_number(Console.WindowHeight);
-                current_windowheight = Console.WindowHeight;
+                if (Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) > 1 || Math.Abs(odd_number(Console.WindowHeight) - current_windowheight) > 1)
+                {
+                    Console.WindowWidth = odd_number(Console.WindowWidth);
+                    current_windowwidth = Console.WindowWidth;
+                    Console.WindowHeight = odd_number(Console.WindowHeight);
+                    current_windowheight = Console.WindowHeight;
+                }
+                else if (Console.WindowWidth % 2 == 0)
+                {
+                    Console.WindowWidth = odd_number(Console.WindowWidth);
+                }
+                else if (Console.WindowHeight % 2 == 0)
+                {
+                    Console.WindowHeight = odd_number(Console.WindowHeight);
+                }
                 return false;
             }
-            else if (Console.WindowWidth % 2 == 0)
-            {
-                Console.WindowWidth = odd_number(Console.WindowWidth);
-            }
-            else if (Console.WindowHeight % 2 == 0)
-            {
-                Console.WindowHeight = odd_number(Console.WindowHeight);
-            }
-            return true;
+            else
+                return true;
         }
         static void generate_ui()
         {
@@ -114,7 +126,21 @@ namespace Vinimport_TUI
                 return; //Hvis størrelsen er ikke meget forskellig, fortsæt ikke. Ellers generere nyt layout.
 
             int y_accounted_for_bar = current_windowheight - bottom_bar_height;
-            int vertically_middle = (current_windowwidth - 1) / 2; 
+            int horizontally_middle = (y_accounted_for_bar - 1) / 2;
+            int vertically_middle = (current_windowwidth - 1) / 2;
+
+            // Mest højeste og venstreste punktet af fielder.
+            field_size = new int[3, 2] {{0, 0}, {0, horizontally_middle + 1}, {vertically_middle + 1, 0 } };
+            /* // Langere alternativ:
+            field_size[0, 0] = 0; 
+            field_size[0, 1] = 0;
+            field_size[1, 0] = 0;
+            field_size[1, 1] = horizontally_middle + 1;
+            field_size[2, 0] = vertically_middle + 1;
+            field_size[2, 1] = 0;
+            //*/
+
+
 
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -122,10 +148,10 @@ namespace Vinimport_TUI
             //Lave vandret og lodret linje. Vær opmærksom, at der skal tage hensyn af bottom_bar_height
             for (int y = 0; y < y_accounted_for_bar; ++y)
             {
-                if ((y_accounted_for_bar - 1) / 2 + 1 == y)
+                if (horizontally_middle == y)
                 {
                     Console.SetCursorPosition(0, y);
-                    Console.WriteLine(new string('-', vertically_middle - 1) + "|");
+                    Console.WriteLine(new string('-', vertically_middle) + "|");
                 }
                 else
                 {
@@ -135,6 +161,22 @@ namespace Vinimport_TUI
             }
 
             //Sætte ind text_fields
+
+            for (int first_dim = 0; first_dim < text_fields.Length; ++first_dim)
+            {
+                for (int second_dim = 0; second_dim < text_fields[first_dim].Length; ++second_dim)
+                {
+                   if (second_dim == 0)
+                   {
+                        Console.SetCursorPosition( centered_text(vertically_middle, text_fields[first_dim][second_dim]), field_size[first_dim, 1] + 1 );
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write(text_fields[first_dim][second_dim]);
+                        Console.ForegroundColor = ConsoleColor.White;
+                   }
+
+                }
+            }
+
 
 
         }
@@ -146,15 +188,25 @@ namespace Vinimport_TUI
             text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
             text_fields[1] = new string[] { "Dato / tid", "København:", "London:", "Singapore:" };
             text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };
-            bottom_bar = "Skulpturen Favntag er ikke at finde på den faste plads, og det satte spekulationer";
             generate_ui();
-            err_msg("End"); //Test generate_ui funktion
+
+            /* //Debug
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            Console.Write(Console.WindowWidth + " " + Console.WindowHeight);
+            err_msg("End"); //Debugging og testning af forskellige ting, så skal jeg ikke kommentere ud while loop.
+            //*/
 
 
             while (true)
             {
                 if (current_windowwidth != Console.WindowHeight || current_windowheight != Console.WindowWidth)
                     generate_ui(); //regeneration af ui
+
+                //* //Debug
+                string lol = Console.WindowWidth + " " + Console.WindowHeight;
+                Console.SetCursorPosition(centered_text(Console.WindowWidth, lol), Console.WindowHeight - 2);
+                Console.Write(Console.WindowWidth + " " + Console.WindowHeight);
+                //*/
 
                 /* API:
                 Du skal bruge "input_fields(where, what)" til at få ting på skærmen,
@@ -168,6 +220,7 @@ namespace Vinimport_TUI
                 "lager_min"             = "Varer under minimum"
                 "lager_max"             = "Varer over maksimum"
                 "lager_mest"            = "Mest solgte i dag"
+                "newsfeed"              = "Newsfeed fra Nordjyske"
 
                 VÆR OPMARKSOM: input_fields tjekke ikke for hvor ofte sender du requester til API
 

@@ -160,6 +160,8 @@ namespace Vinimport_TUI
                 }
             }
 
+            //Can you see this???
+
             //Sætte ind text_fields
 
             for (int first_dim = 0; first_dim < text_fields.Length; ++first_dim)

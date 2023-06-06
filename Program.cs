@@ -8,11 +8,11 @@ namespace Vinimport_TUI
 {
     /*
      * Som koden er, den mangler disse vigtige funktionaliteter:
-     * - UI generation kode i generate_ui
      * - API kode
      * Og disse ikke-så-vigtig funktionaliteter:
      * - Text wrapping i set_and_write funktion (Ikke vigtig. UI generation kode er vigtiger end det.)
      * - Magisk kode for offset af begyndelse af text_input linje i venstre sub-vindue ("Lagerstatus").
+     * - fjern hacks i generate_ui() funktionen
      * Og selvfølgelig:
      * - Masse af testning
      */
@@ -220,22 +220,30 @@ namespace Vinimport_TUI
 
             pos_of_inputs[8,0] = 0;
             pos_of_inputs[8,1] = Console.WindowHeight - 1;
+            /* //Buggy code, alt det prøve at røre text_inputs[inputs], generere sådan error:
+            //Unhandled Exception: System.NullReferenceException: Object reference not set to an instance of an object.
+            for (int inputs = 0; inputs < text_inputs.Length; ++inputs)
+            {
+                if (text_inputs[inputs].GetLength(1) != 0)
+                {
+                    for (int n = 0; n < text_inputs[inputs].Length; ++n)
+                    {
+                        Console.SetCursorPosition(pos_of_inputs[inputs, 0] + 1, pos_of_inputs[inputs, 1] + n);
+                        Console.Write(text_inputs[inputs][n]);
+                    }
+                    Console.SetCursorPosition(default_cursor_pos[0], default_cursor_pos[1]);
+                }
+            }
+            //*/
         }
         static void Main(string[] args)
         {
-            //var prgm = new Program();
             //"sep" står for separation, som ligner sådan: "----------------------"
             // Først string er titlen, og resten er enten separationer eller sub-titler.
             text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
             text_fields[1] = new string[] { "Dato / tid", "København:", "London:", "Singapore:" };
             text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };
             generate_ui();
-
-            /* //Debug
-            Console.SetCursorPosition(0, Console.WindowHeight - 2);
-            Console.Write(Console.WindowWidth + " " + Console.WindowHeight);
-            err_msg("End"); //Debugging og testning af forskellige ting, så skal jeg ikke kommentere ud while loop.
-            //*/
 
 
             while (true)
@@ -247,8 +255,8 @@ namespace Vinimport_TUI
                 Console.SetCursorPosition(0, Console.WindowHeight - 2);
                 Console.Write(Console.WindowWidth + " " + Console.WindowHeight);
                 //*/
-                input_fields("newsfeed", new string[1] { "lol" });
-                /*
+                //input_fields("newsfeed", new string[1] { "lol" });
+                /* //Forskellig debug
                 Console.Clear();
                 for (int a = 0; a < pos_of_inputs.GetLength(0); ++ a)
                 {

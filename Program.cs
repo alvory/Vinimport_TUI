@@ -220,11 +220,11 @@ namespace Vinimport_TUI
 
             pos_of_inputs[8,0] = 0;
             pos_of_inputs[8,1] = Console.WindowHeight - 1;
-            /* //Buggy code, alt det prøve at røre text_inputs[inputs], generere sådan error:
+            //* //Buggy code, alt det prøve at røre text_inputs[inputs], generere sådan error:
             //Unhandled Exception: System.NullReferenceException: Object reference not set to an instance of an object.
             for (int inputs = 0; inputs < text_inputs.Length; ++inputs)
             {
-                if (text_inputs[inputs].GetLength(1) != 0)
+                if (text_inputs.ElementAt(inputs) != null)
                 {
                     for (int n = 0; n < text_inputs[inputs].Length; ++n)
                     {
@@ -255,7 +255,7 @@ namespace Vinimport_TUI
                 Console.SetCursorPosition(0, Console.WindowHeight - 2);
                 Console.Write(Console.WindowWidth + " " + Console.WindowHeight);
                 //*/
-                //input_fields("newsfeed", new string[1] { "lol" });
+                input_fields("newsfeed", new string[1] { "lol" });
                 /* //Forskellig debug
                 Console.Clear();
                 for (int a = 0; a < pos_of_inputs.GetLength(0); ++ a)

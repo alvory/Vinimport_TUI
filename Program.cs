@@ -260,6 +260,9 @@ namespace Vinimport_TUI
             }
             //*/
         }
+
+
+
         static void Main(string[] args)
         {
             //Måske disse 2 linje nedenunder vil tillade UTF-8 encoding i stedet af hvad windows bruger som standard.
@@ -282,7 +285,8 @@ namespace Vinimport_TUI
                     long time = DateTimeOffset.Now.ToUnixTimeSeconds();
                     if ( Math.Abs(time - last_time) >= update_time )
                     {
-                    //API, som skal har forbindelse til netværk skal være her:
+                        DVIService.monitorSoapClient ds = new DVIService.monitorSoapClient();
+                        input_fields("newsfeed", new string[1] { ds.StockTemp().ToString("N2") + "°C");
 
                     last_time = time;
                     }

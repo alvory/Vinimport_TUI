@@ -8,9 +8,7 @@ namespace Vinimport_TUI
 {
     /*
      * Som koden er, den mangler disse vigtige funktionaliteter:
-     * - API kode
      * Og disse ikke-så-vigtig funktionaliteter:
-     * - Magisk kode for offset af begyndelse af text_input linje i venstre sub-vindue ("Lagerstatus").
      * - fjern hacks i generate_ui() funktionen(måske aldrig)
      * Og selvfølgelig:
      * - Masse af testning
@@ -268,6 +266,10 @@ namespace Vinimport_TUI
             //Måske disse 2 linje nedenunder vil tillade UTF-8 encoding i stedet af hvad windows bruger som standard.
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             System.Text.Encoding.GetEncoding(65001);
+
+
+            DVIService.monitorSoapClient ds = new DVIService.monitorSoapClient();
+
             //"sep" står for separation, som ligner sådan: "----------------------"
             // Først string er titlen, og resten er enten separationer eller sub-titler.
             text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
@@ -285,8 +287,11 @@ namespace Vinimport_TUI
                     long time = DateTimeOffset.Now.ToUnixTimeSeconds();
                     if ( Math.Abs(time - last_time) >= update_time )
                     {
-                        DVIService.monitorSoapClient ds = new DVIService.monitorSoapClient();
-                        input_fields("newsfeed", new string[1] { ds.StockTemp().ToString("N2") + "°C");
+                        input_fields("temp_og_fugt_lager", new string[] { "Temp: " + ds.StockTemp().ToString("N2") + "°C", "Fugt: " + ds.StockHumidity().ToString("N2") + "%" });
+                        input_fields("temp_og_fugt_udenfor", new string[] { "Temp: " + ds.OutdoorTemp().ToString("N2") + "°C", "Fugt: " + ds.OutdoorHumidity().ToString("N2") + "%" });
+                        input_fields("lager_min", ds.StockItemsUnderMin().ToArray() );
+                        input_fields("lager_max", ds.StockItemsOverMax().ToArray());
+                        input_fields("lager_mest", ds.StockItemsMostSold().ToArray());
 
                     last_time = time;
                     }

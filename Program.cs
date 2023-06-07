@@ -45,15 +45,15 @@ namespace Vinimport_TUI
         {
             for (int line = 0; line < what.Length; ++line)
             {
-                if (what[line].Length > vertically_middle-1)
+                if (what[line].Length > vertically_middle - 1)
                 {
                     Array.Resize(ref what, what.Length + 1);
                     for (int enil = what.Length - 1; enil > line; --enil)
                     {
                         what[enil] = what[enil - 1];
                     }
-                    what[line + 1] = what[line].Substring(vertically_middle-1);
-                    what[line] = what[line].Substring(0, vertically_middle-1);
+                    what[line + 1] = what[line].Substring(vertically_middle - 1);
+                    what[line] = what[line].Substring(0, vertically_middle - 1);
                 }
             }
             return what;

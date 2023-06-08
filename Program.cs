@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using System.ServiceModel.Syndication;
 using System.Xml;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Vinimport_TUI
 {
@@ -58,21 +53,17 @@ namespace Vinimport_TUI
                     what[line] = what[line].Substring(0, vertically_middle - 1);
                 }
             }
-            if (cut_mode == false)
-            {
-                return what;
-            }
-            else
-            {
-                return new string[] { what[0] };
-            }    
+            return what;
         } //*/
         static void set_and_write(int where, string[] what, ConsoleColor color = ConsoleColor.White)
         {
-            string[] temp_what;
-            if (pos_of_inputs[where, 1] == Console.WindowHeight - 1)
+            string[] temp_what = null;
+            if (pos_of_inputs[where, 1] == current_windowheight - 1)
             {
-                temp_what = wrapper(what, true);
+                if (what[0].Length > current_windowwidth - 1)
+                    temp_what = new string[] { what[0].Substring(0, current_windowwidth - 1) };
+                else
+                    temp_what = new string[] { what[0] };
             }
             else
             {
@@ -80,7 +71,7 @@ namespace Vinimport_TUI
             }
             what = temp_what;
 
-                if (text_inputs.ElementAt(where) != null)
+            if (text_inputs.ElementAt(where) != null)
             {
                 if (!text_inputs[where].SequenceEqual(what))
                 { //Hvis forskellig, opdatere.
@@ -267,8 +258,8 @@ namespace Vinimport_TUI
             }
 
             //Altid kendt
-            pos_of_inputs[8,0] = 0;
-            pos_of_inputs[8,1] = Console.WindowHeight - 1;
+            pos_of_inputs[8, 0] = 0;
+            pos_of_inputs[8, 1] = Console.WindowHeight - 1;
 
             for (int inputs = 0; inputs < text_inputs.Length; ++inputs)
             {
@@ -312,7 +303,7 @@ namespace Vinimport_TUI
             }
             return day_in_danish + " " + cur_date;
         }
-        
+
         static string newsfeed()
         {
             XmlReader news = XmlReader.Create("https://nordjyske.dk/rss/nyheder");
@@ -372,32 +363,32 @@ namespace Vinimport_TUI
                     last_time = time;
                 }
 
-                    /* API:
-                    Du skal bruge "input_fields("where", what)" til at få ting på skærmen,
-                    "what" er string array, som bevæge cursor til specifiske plads og skrive hvad der er i array.
-                    "where" referere til et switch statement, som tjekke, om en af de følgene tekstfælde passer, som du kende som:
-                    0. "temp_og_fugt_lager"    = "Lager:"
-                    1. "temp_og_fugt_udenfor"  = "Udenfor:"
-                    2. "date_kobenhavn"        = "København:"
-                    3. "date_london"           = "London:"
-                    4. "date_singapore"        = "Singapore:"
-                    5. "lager_min"             = "Varer under minimum"
-                    6. "lager_max"             = "Varer over maksimum"
-                    7. "lager_mest"            = "Mest solgte i dag"
-                    8. "newsfeed"              = "Newsfeed fra Nordjyske"
+                /* API:
+                Du skal bruge "input_fields("where", what)" til at få ting på skærmen,
+                "what" er string array, som bevæge cursor til specifiske plads og skrive hvad der er i array.
+                "where" referere til et switch statement, som tjekke, om en af de følgene tekstfælde passer, som du kende som:
+                0. "temp_og_fugt_lager"    = "Lager:"
+                1. "temp_og_fugt_udenfor"  = "Udenfor:"
+                2. "date_kobenhavn"        = "København:"
+                3. "date_london"           = "London:"
+                4. "date_singapore"        = "Singapore:"
+                5. "lager_min"             = "Varer under minimum"
+                6. "lager_max"             = "Varer over maksimum"
+                7. "lager_mest"            = "Mest solgte i dag"
+                8. "newsfeed"              = "Newsfeed fra Nordjyske"
 
-                    EKSEMPLER:
-                        uden string af arrayer:
-                            input_fields("newsfeed", new string[1] { "lol" });
-                        med string af arrayer:
-                            string[] var = new string[] {"lol"};
+                EKSEMPLER:
+                    uden string af arrayer:
+                        input_fields("newsfeed", new string[1] { "lol" });
+                    med string af arrayer:
+                        string[] var = new string[] {"lol"};
 
-                            input_fields("newsfeed", var);
+                        input_fields("newsfeed", var);
 
-                    VÆR OPMARKSOM: input_fields tjekke ikke for hvor ofte sender du requester til API
-                    */
+                VÆR OPMARKSOM: input_fields tjekke ikke for hvor ofte sender du requester til API
+                */
 
-                }
             }
+        }
     }
 }

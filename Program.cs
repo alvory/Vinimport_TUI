@@ -143,10 +143,11 @@ namespace Vinimport_TUI
                 return input + 1;
             return input;
         }
-        static bool odd_numbered_window_size() //Også snyd, der skulle ikke bruge odd_number, men skifte font størrelse.
-        // Den del skal gør sikker, at terminal vindue er altid symmetrisk. Fordi vi har brug for 1 linje, som dividere vores app i halv, 2 gange, vi har brug for "odd" nummere.
-        // Efter testning, fundet jeg ud, at der kan ske layout problemmer, derfor skal funktionen være mere aggressiv.
+        static bool odd_numbered_window_size()
         {
+            // Den del skal gør sikker, at terminal vindue er altid symmetrisk. Fordi vi har brug for 1 linje, som dividere vores app i halv, 2 gange, vi har brug for "odd" nummere.
+            // Efter testning, fundet jeg ud, at der kan ske layout problemmer, derfor skal funktionen være mere aggressiv.
+
             if (current_windowwidth != Console.WindowWidth || current_windowheight != Console.WindowHeight)
             {
                 if (Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) > 1 || Math.Abs(odd_number(Console.WindowHeight) - current_windowheight) > 1)
@@ -303,7 +304,6 @@ namespace Vinimport_TUI
             }
             return day_in_danish + " " + cur_date;
         }
-
         static string newsfeed()
         {
             XmlReader news = XmlReader.Create("https://nordjyske.dk/rss/nyheder");
@@ -324,7 +324,7 @@ namespace Vinimport_TUI
             DVIService.monitorSoapClient ds = new DVIService.monitorSoapClient();
 
             //"sep" står for separation, som ligner sådan: "----------------------"
-            // Først string er titlen, og resten er enten separationer eller sub-titler.
+            // Først string er titlen, og resten er enten separationer eller subtitler.
             text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
             text_fields[1] = new string[] { "Dato / tid", "København:", "London:", "Singapore:" };
             text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };

@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Xml;
@@ -330,8 +335,8 @@ namespace Vinimport_TUI
             text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };
             generate_ui();
 
-            long last_time = DateTimeOffset.Now.ToUnixTimeSeconds();
-            long last_time_date = DateTimeOffset.Now.ToUnixTimeSeconds();
+            long last_time = 0;
+            long last_time_date = 0;
             while (true)
             {
                 if (current_windowwidth != Console.WindowHeight || current_windowheight != Console.WindowWidth)

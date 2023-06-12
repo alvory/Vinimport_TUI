@@ -19,11 +19,11 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="HTTP://dvimonitor.azurewebsites.net/monitor.asmx" Protocol="http" SourceId="1" />
+    <MetadataSource Address="https://dvimonitor.azurewebsites.net/monitor.asmx" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="monitor.wsdl" MetadataType="Wsdl" ID="572c5ee0-c55c-4b04-881c-07e7c42fd912" SourceId="1" SourceUrl="http://dvimonitor.azurewebsites.net/monitor.asmx?wsdl" />
-    <MetadataFile FileName="monitor.disco" MetadataType="Disco" ID="c0fc8e94-68dc-49b3-8c89-145778a7fde9" SourceId="1" SourceUrl="http://dvimonitor.azurewebsites.net/monitor.asmx?disco" />
+    <MetadataFile FileName="monitor1.disco" MetadataType="Disco" ID="5b240819-4250-4902-80fe-c49f717047b2" SourceId="1" SourceUrl="https://dvimonitor.azurewebsites.net/monitor.asmx?disco" />
+    <MetadataFile FileName="monitor1.wsdl" MetadataType="Wsdl" ID="53d1ad3d-fb8c-40dc-a310-d5b2b6d0f650" SourceId="1" SourceUrl="https://dvimonitor.azurewebsites.net/monitor.asmx?wsdl" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -285,10 +285,10 @@
   </wsdl:binding>
   <wsdl:service name="monitor">
     <wsdl:port name="monitorSoap" binding="tns:monitorSoap">
-      <soap:address location="http://dvimonitor.azurewebsites.net/monitor.asmx" />
+      <soap:address location="https://dvimonitor.azurewebsites.net/monitor.asmx" />
     </wsdl:port>
     <wsdl:port name="monitorSoap12" binding="tns:monitorSoap12">
-      <soap12:address location="http://dvimonitor.azurewebsites.net/monitor.asmx" />
+      <soap12:address location="https://dvimonitor.azurewebsites.net/monitor.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

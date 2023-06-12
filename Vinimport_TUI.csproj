@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Connected Services\DVIService\monitor.wsdl" />
+    <None Include="Connected Services\DVIService\monitor1.wsdl" />
     <None Include="Connected Services\DVIService\Vinimport_TUI.DVIService.ArrayOfString.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
@@ -77,9 +77,6 @@
     <WCFMetadataStorage Include="Connected Services\DVIService\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Connected Services\DVIService\monitor.disco" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Connected Services\DVIService\configuration91.svcinfo" />
   </ItemGroup>
   <ItemGroup>
@@ -90,6 +87,9 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\DVIService\monitor1.disco" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

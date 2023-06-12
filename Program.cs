@@ -330,8 +330,8 @@ namespace Vinimport_TUI
             text_fields[2] = new string[] { "Lagerstatus", "Varer under minimum", "sep", "Varer over maksimum", "sep", "Mest solgte i dag", "sep" };
             generate_ui();
 
-            long last_time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            long last_time_date = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            long last_time = DateTimeOffset.Now.ToUnixTimeSeconds();
+            long last_time_date = DateTimeOffset.Now.ToUnixTimeSeconds();
             while (true)
             {
                 if (current_windowwidth != Console.WindowHeight || current_windowheight != Console.WindowWidth)

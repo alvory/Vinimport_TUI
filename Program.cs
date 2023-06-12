@@ -32,10 +32,10 @@ namespace Vinimport_TUI
         static int vertically_middle = (current_windowwidth - 1) / 2;
         static int update_time = 300; //hvor ofte skal API opdateres i sekunder
 
-        static void err_msg(string msg, int which = 1)
+        static void err_msg(string msg, int code = 1)
         {
             Console.WriteLine("ERROR: " + msg);
-            Environment.Exit(which);
+            Environment.Exit(code);
         }
         static void colorfull_print(string what, ConsoleColor color = ConsoleColor.White)
         {
@@ -43,7 +43,7 @@ namespace Vinimport_TUI
             Console.Write(what);
             Console.ForegroundColor = ConsoleColor.White;
         }
-        static string[] wrapper(string[] what, bool cut_mode = false) //Hvis linje er for stør, klip tekst kort og læg det i nyt linje
+        static string[] wrapper(string[] what) //Hvis linje er for stør, klip tekst kort og læg det i nyt linje
         {
             for (int line = 0; line < what.Length; ++line)
             {
@@ -59,7 +59,7 @@ namespace Vinimport_TUI
                 }
             }
             return what;
-        } //*/
+        }
         static void set_and_write(int where, string[] what, ConsoleColor color = ConsoleColor.White)
         {
             string[] temp_what = null;
@@ -384,9 +384,9 @@ namespace Vinimport_TUI
 
                 EKSEMPLER:
                     uden string af arrayer:
-                        input_fields("newsfeed", new string[1] { "lol" });
+                        input_fields("newsfeed", new string[1] { "tekst" });
                     med string af arrayer:
-                        string[] var = new string[] {"lol"};
+                        string[] var = new string[] { "tekst" };
 
                         input_fields("newsfeed", var);
 

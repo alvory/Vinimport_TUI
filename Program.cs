@@ -42,7 +42,7 @@ namespace Vinimport_TUI
         {
             Console.ForegroundColor = color;
             Console.Write(what);
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ResetColor();
         }
         static string[] wrapper(string[] what) //Hvis linje er for stør, klip tekst kort og læg det i nyt linje
         {
@@ -52,9 +52,7 @@ namespace Vinimport_TUI
                 {
                     Array.Resize(ref what, what.Length + 1);
                     for (int enil = what.Length - 1; enil > line; --enil)
-                    {
                         what[enil] = what[enil - 1];
-                    }
                     what[line + 1] = what[line].Substring(vertically_middle - left_offset);
                     what[line] = what[line].Substring(0, vertically_middle - left_offset);
                 }
@@ -83,12 +81,10 @@ namespace Vinimport_TUI
                 temp_what = wrapper(what);
             what = temp_what;
 
-
             for (int n = 0; n < what.Length; ++n)
             {
 
                 if (pos_of_inputs[where, 1] == Console.WindowHeight - 1)
-
                     Console.SetCursorPosition(centered_text(current_windowwidth, what[n]) +
                                               pos_of_inputs[where, 0], pos_of_inputs[where, 1] + n);
                 else

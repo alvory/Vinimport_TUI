@@ -262,11 +262,8 @@ namespace Vinimport_TUI
 
             for (int inputs = 0; inputs < text_inputs.Length; ++inputs)
             {
-
                 if (text_inputs.ElementAt(inputs) != null)
-                {
                     input_fields(inputs.ToString(), text_inputs[inputs]);
-                }
             }
         }
         static string currenttime(string where)

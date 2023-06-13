@@ -31,7 +31,7 @@ namespace Vinimport_TUI
         static int horizontally_middle = (y_accounted_for_bar - 1) / 2;
         static int vertically_middle = (current_windowwidth - 1) / 2;
         static int update_time = 300; //hvor ofte skal API opdateres i sekunder
-        static int left_offset = 3;
+        static int left_offset = 2;
 
         static void err_msg(string msg, int code = 1)
         {

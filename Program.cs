@@ -31,6 +31,7 @@ namespace Vinimport_TUI
         static int horizontally_middle = (y_accounted_for_bar - 1) / 2;
         static int vertically_middle = (current_windowwidth - 1) / 2;
         static int update_time = 300; //hvor ofte skal API opdateres i sekunder
+        static int left_offset = 3;
 
         static void err_msg(string msg, int code = 1)
         {
@@ -47,54 +48,51 @@ namespace Vinimport_TUI
         {
             for (int line = 0; line < what.Length; ++line)
             {
-                if (what[line].Length > vertically_middle - 1)
+                if (what[line].Length > vertically_middle - left_offset)
                 {
                     Array.Resize(ref what, what.Length + 1);
                     for (int enil = what.Length - 1; enil > line; --enil)
                     {
                         what[enil] = what[enil - 1];
                     }
-                    what[line + 1] = what[line].Substring(vertically_middle - 1);
-                    what[line] = what[line].Substring(0, vertically_middle - 1);
+                    what[line + 1] = what[line].Substring(vertically_middle - left_offset);
+                    what[line] = what[line].Substring(0, vertically_middle - left_offset);
                 }
             }
             return what;
         }
         static void set_and_write(int where, string[] what, ConsoleColor color = ConsoleColor.White)
         {
+            if (text_inputs.ElementAt(where) != null)
+            {
+                if (!text_inputs[where].SequenceEqual(what))
+                    text_inputs[where] = what; //for regeneraton af ui
+            }
+            else
+                text_inputs[where] = what; //for regeneraton af ui
+
             string[] temp_what = null;
             if (pos_of_inputs[where, 1] == current_windowheight - 1)
             {
                 if (what[0].Length > current_windowwidth - 1)
-                    temp_what = new string[] { what[0].Substring(0, current_windowwidth - 1) };
+                    temp_what = new string[] { what[0].Substring(0, current_windowwidth - left_offset) };
                 else
                     temp_what = new string[] { what[0] };
             }
             else
-            {
                 temp_what = wrapper(what);
-            }
             what = temp_what;
 
-            if (text_inputs.ElementAt(where) != null)
-            {
-                if (!text_inputs[where].SequenceEqual(what))
-                { //Hvis forskellig, opdatere.
-                    text_inputs[where] = what; //for regeneraton af ui
-                }
-            }
-            else
-            {
-                text_inputs[where] = what; //for regeneraton af ui
-            }
+
             for (int n = 0; n < what.Length; ++n)
             {
 
                 if (pos_of_inputs[where, 1] == Console.WindowHeight - 1)
 
-                    Console.SetCursorPosition(centered_text(current_windowwidth, what[n]) + pos_of_inputs[where, 0], pos_of_inputs[where, 1] + n);
+                    Console.SetCursorPosition(centered_text(current_windowwidth, what[n]) +
+                                              pos_of_inputs[where, 0], pos_of_inputs[where, 1] + n);
                 else
-                    Console.SetCursorPosition(pos_of_inputs[where, 0] + 2, pos_of_inputs[where, 1] + n);
+                    Console.SetCursorPosition(pos_of_inputs[where, 0] + left_offset, pos_of_inputs[where, 1] + n);
                 colorfull_print(what[n], color);
             }
             Console.SetCursorPosition(default_cursor_pos[0], default_cursor_pos[1]);
@@ -108,7 +106,7 @@ namespace Vinimport_TUI
         }
         static void input_fields(string where, string[] what)
         {
-            switch (where) //Kunne forkortes ved brug af array og array.length
+            switch (where)
             {
                 case var _ when where == "0" || where == "temp_og_fugt_lager":
                     set_and_write(0, what);
@@ -152,10 +150,10 @@ namespace Vinimport_TUI
         {
             // Den del skal gør sikker, at terminal vindue er altid symmetrisk. Fordi vi har brug for 1 linje, som dividere vores app i halv, 2 gange, vi har brug for "odd" nummere.
             // Efter testning, fundet jeg ud, at der kan ske layout problemmer, derfor skal funktionen være mere aggressiv.
-
             if (current_windowwidth != Console.WindowWidth || current_windowheight != Console.WindowHeight)
             {
-                if (Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) > 1 || Math.Abs(odd_number(Console.WindowHeight) - current_windowheight) > 1)
+                if (Math.Abs(odd_number(Console.WindowWidth) - current_windowwidth) > 1 ||
+                    Math.Abs(odd_number(Console.WindowHeight) - current_windowheight) > 1)
                 {
                     Console.WindowWidth = odd_number(Console.WindowWidth);
                     current_windowwidth = Console.WindowWidth;
@@ -211,27 +209,26 @@ namespace Vinimport_TUI
             }
 
             //Sætte ind text_fields
-
             for (int first_dim = 0; first_dim < text_fields.Length; ++first_dim)
             {
                 for (int second_dim = 0; second_dim < text_fields[first_dim].Length; ++second_dim)
                 {
                     if (second_dim == 0)
                     {
-                        Console.SetCursorPosition(centered_text(vertically_middle, text_fields[first_dim][second_dim]) + field_size[first_dim, 0] + 1, field_size[first_dim, 1] + 1);
+                        Console.SetCursorPosition(centered_text(vertically_middle, text_fields[first_dim][second_dim]) +
+                                                  field_size[first_dim, 0] + 1, field_size[first_dim, 1] + 1);
                         colorfull_print(text_fields[first_dim][second_dim] + "\n\n", ConsoleColor.Cyan);
                     }
                     else if (text_fields[first_dim][second_dim] == "sep")
                     {
-                        Console.SetCursorPosition(field_size[first_dim, 0] + 2, Console.CursorTop + 1);
-                        colorfull_print(new string('-', vertically_middle - 2), ConsoleColor.Cyan);
+                        Console.SetCursorPosition(field_size[first_dim, 0] + left_offset, Console.CursorTop + 1);
+                        colorfull_print(new string('-', vertically_middle - left_offset), ConsoleColor.Cyan);
                         //Snyd, sep er kun brugt i tredje subvindue, og 5 er magisk nummer
                         Console.Write(new string('\n', 5));
-
                     }
                     else
                     {
-                        Console.SetCursorPosition(field_size[first_dim, 0] + 2, Console.CursorTop);
+                        Console.SetCursorPosition(field_size[first_dim, 0] + left_offset, Console.CursorTop);
                         colorfull_print(text_fields[first_dim][second_dim], ConsoleColor.Cyan);
                         pos_of_inputs[where_to_write, 0] = field_size[first_dim, 0];
 
@@ -320,14 +317,11 @@ namespace Vinimport_TUI
         }
         static void Main(string[] args)
         {
-
             //Måske disse 2 linje nedenunder vil tillade UTF-8 encoding i stedet af hvad windows bruger som standard.
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             System.Text.Encoding.GetEncoding(65001);
 
-
             DVIService.monitorSoapClient ds = new DVIService.monitorSoapClient();
-
             //"sep" står for separation, som ligner sådan: "----------------------"
             // Først string er titlen, og resten er enten separationer eller subtitler.
             text_fields[0] = new string[] { "Temperatur og fugtighed", "Lager:", "Udenfor:" };
@@ -341,8 +335,6 @@ namespace Vinimport_TUI
             {
                 if (current_windowwidth != Console.WindowHeight || current_windowheight != Console.WindowWidth)
                     generate_ui(); //regeneration af ui
-
-
                 //Ur
                 long time_date = DateTimeOffset.Now.ToUnixTimeSeconds();
                 if (Math.Abs(time_date - last_time_date) >= 1)
@@ -350,24 +342,22 @@ namespace Vinimport_TUI
                     input_fields("date_kobenhavn", new string[] { currenttime("Central European Standard Time") });
                     input_fields("date_london", new string[] { currenttime("W. Europe Standard Time") });
                     input_fields("date_singapore", new string[] { currenttime("Singapore Standard Time") });
-
                     last_time_date = time_date;
                 }
-
                 //API
                 long time = DateTimeOffset.Now.ToUnixTimeSeconds();
                 if (Math.Abs(time - last_time) >= update_time)
                 {
-                    input_fields("temp_og_fugt_lager", new string[] { "Temp: " + ds.StockTemp().ToString("N2") + "°C", "Fugt: " + ds.StockHumidity().ToString("N2") + "%" });
-                    input_fields("temp_og_fugt_udenfor", new string[] { "Temp: " + ds.OutdoorTemp().ToString("N2") + "°C", "Fugt: " + ds.OutdoorHumidity().ToString("N2") + "%" });
+                    input_fields("temp_og_fugt_lager", new string[] { "Temp: " + ds.StockTemp().ToString("N2") + "°C",
+                                                                      "Fugt: " + ds.StockHumidity().ToString("N2") + "%" });
+                    input_fields("temp_og_fugt_udenfor", new string[] { "Temp: " + ds.OutdoorTemp().ToString("N2") + "°C", 
+                                                                        "Fugt: " + ds.OutdoorHumidity().ToString("N2") + "%" });
                     input_fields("lager_min", ds.StockItemsUnderMin().ToArray());
                     input_fields("lager_max", ds.StockItemsOverMax().ToArray());
                     input_fields("lager_mest", ds.StockItemsMostSold().ToArray());
                     input_fields("newsfeed", new string[] { newsfeed() });
-
                     last_time = time;
                 }
-
                 /* API:
                 Du skal bruge "input_fields("where", what)" til at få ting på skærmen,
                 "what" er string array, som bevæge cursor til specifiske plads og skrive hvad der er i array.
@@ -392,7 +382,6 @@ namespace Vinimport_TUI
 
                 VÆR OPMARKSOM: input_fields tjekke ikke for hvor ofte sender du requester til API
                 */
-
             }
         }
     }

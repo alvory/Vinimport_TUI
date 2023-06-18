@@ -28,8 +28,8 @@ namespace Vinimport_TUI
         static int[] default_cursor_pos = { 0, 0 };
         static int bottom_bar_height = 2;
         static int y_accounted_for_bar = current_windowheight - bottom_bar_height;
-        static int horizontally_middle = (y_accounted_for_bar - 1) / 2;
-        static int vertically_middle = (current_windowwidth - 1) / 2;
+        static int vertically_middle = (y_accounted_for_bar - 1) / 2;
+        static int horizontally_middle = (current_windowwidth - 1) / 2;
         static int update_time = 300; //hvor ofte skal API opdateres i sekunder
         static int left_offset = 2;
 
@@ -48,13 +48,13 @@ namespace Vinimport_TUI
         {
             for (int line = 0; line < what.Length; ++line)
             {
-                if (what[line].Length > vertically_middle - left_offset)
+                if (what[line].Length > horizontally_middle - left_offset)
                 {
                     Array.Resize(ref what, what.Length + 1);
                     for (int enil = what.Length - 1; enil > line; --enil)
                         what[enil] = what[enil - 1];
-                    what[line + 1] = what[line].Substring(vertically_middle - left_offset);
-                    what[line] = what[line].Substring(0, vertically_middle - left_offset);
+                    what[line + 1] = what[line].Substring(horizontally_middle - left_offset);
+                    what[line] = what[line].Substring(0, horizontally_middle - left_offset);
                 }
             }
             return what;
@@ -153,14 +153,10 @@ namespace Vinimport_TUI
                     Console.WindowHeight = odd_number(Console.WindowHeight);
                     current_windowheight = Console.WindowHeight;
                 }
-                else if (Console.WindowWidth % 2 == 0)
-                {
+                if (Console.WindowWidth % 2 == 0)
                     Console.WindowWidth = odd_number(Console.WindowWidth);
-                }
-                else if (Console.WindowHeight % 2 == 0)
-                {
+                if (Console.WindowHeight % 2 == 0)
                     Console.WindowHeight = odd_number(Console.WindowHeight);
-                }
                 return false;
             }
             else
@@ -174,29 +170,28 @@ namespace Vinimport_TUI
                 return; //Hvis størrelsen er ikke meget forskellig, fortsæt ikke. Ellers generere nyt layout.
 
             y_accounted_for_bar = current_windowheight - bottom_bar_height;
-            horizontally_middle = (y_accounted_for_bar - 1) / 2;
-            vertically_middle = (current_windowwidth - 1) / 2;
+            vertically_middle = (y_accounted_for_bar - 1) / 2;
+            horizontally_middle = (current_windowwidth - 1) / 2;
             int where_to_write = 0;
 
             // Mest højeste og venstreste punktet af fielder.
-            field_size = new int[3, 2] { { 0, 0 }, { 0, horizontally_middle + 1 }, { vertically_middle + 1, 0 } };
+            field_size = new int[3, 2] { { 0, 0 }, { 0, vertically_middle + 1 }, { horizontally_middle + 1, 0 } };
 
 
 
             Console.Clear();
             Console.SetCursorPosition(0, 0);
-
             //Lave vandret og lodret linje. Vær opmærksom, at der skal tage hensyn af bottom_bar_height
             for (int y = 0; y < y_accounted_for_bar; ++y)
             {
-                if (horizontally_middle == y)
+                if (vertically_middle == y)
                 {
                     Console.SetCursorPosition(0, y);
-                    Console.WriteLine(new string('-', vertically_middle) + "|");
+                    Console.WriteLine(new string('-', horizontally_middle) + "|");
                 }
                 else
                 {
-                    Console.SetCursorPosition(vertically_middle, y);
+                    Console.SetCursorPosition(horizontally_middle, y);
                     Console.WriteLine("|");
                 }
             }
@@ -208,14 +203,14 @@ namespace Vinimport_TUI
                 {
                     if (second_dim == 0)
                     {
-                        Console.SetCursorPosition(centered_text(vertically_middle, text_fields[first_dim][second_dim]) +
+                        Console.SetCursorPosition(centered_text(horizontally_middle, text_fields[first_dim][second_dim]) +
                                                   field_size[first_dim, 0] + 1, field_size[first_dim, 1] + 1);
                         colorfull_print(text_fields[first_dim][second_dim] + "\n\n", ConsoleColor.Cyan);
                     }
                     else if (text_fields[first_dim][second_dim] == "sep")
                     {
                         Console.SetCursorPosition(field_size[first_dim, 0] + left_offset, Console.CursorTop + 1);
-                        colorfull_print(new string('-', vertically_middle - left_offset), ConsoleColor.Cyan);
+                        colorfull_print(new string('-', horizontally_middle - left_offset), ConsoleColor.Cyan);
                         //Snyd, sep er kun brugt i tredje subvindue, og 5 er magisk nummer
                         Console.Write(new string('\n', 5));
                     }
@@ -323,7 +318,6 @@ namespace Vinimport_TUI
             long last_time_date = 0;
             while (true)
             {
-                if (current_windowwidth != Console.WindowHeight || current_windowheight != Console.WindowWidth)
                     generate_ui(); //regeneration af ui
                 //Ur
                 long time_date = DateTimeOffset.Now.ToUnixTimeSeconds();

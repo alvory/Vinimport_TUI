@@ -95,10 +95,7 @@ namespace Vinimport_TUI
         }
         static int centered_text(int length, string what)
         {
-            if (what.Length % 2 == 0)
                 return (length - length % 2 - what.Length) / 2;
-            else
-                return (length - what.Length) / 2;
         }
         static void input_fields(string where, string[] what)
         {
